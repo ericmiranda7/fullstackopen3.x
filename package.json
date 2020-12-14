@@ -1,0 +1,19 @@
+{
+  "name": "fullstackopen3.x",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericmiranda7/fullstackopen3.x.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ericmiranda7/fullstackopen3.x/issues"
+  },
+  "homepage": "https://github.com/ericmiranda7/fullstackopen3.x#readme"
+}
