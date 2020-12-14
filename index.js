@@ -50,6 +50,11 @@ app.post('/api/persons', (request, response) => {
     const body = request.body
     const id = Math.floor(Math.random() * 1000)
 
+    const exists = notes.find(note => note.name === body.name) ? true : false
+
+    if (!body.number || !body.name) return response.status(400).json({error: "name or number missing"})
+    if (exists) return response.status(400).json({error: "Name already exists"})
+
     const note = {
         name: body.name,
         number: body.number,
