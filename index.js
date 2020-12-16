@@ -4,6 +4,9 @@ const morgan = require('morgan')
 const morganApp = morgan('tiny')
 app.use(express.json())
 app.use(morganApp)
+//morgan.token('data', (req, res) => req.body)
+
+
 
 let notes = [
     {
@@ -34,7 +37,7 @@ app.get('/api/persons', (request, response) => {
 app.get('/api/persons/:id', (request, response) => {
     const id = request.params.id
     const note = notes.find(note => note.id == id)
-    if (note) response.json(note)
+    if (note) return response.json(note)
     response.status(404).end()
 })
 
