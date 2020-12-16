@@ -1,10 +1,14 @@
+const { json } = require('express')
 const express = require('express')
 const app = express()
-const morgan = require('morgan')
-const morganApp = morgan('tiny')
 app.use(express.json())
+
+const morgan = require('morgan')
+morgan.token('data', (req, res) => {
+    return JSON.stringify(req.body)
+})
+const morganApp = morgan(':method :url :status :res[content-length] - :response-time ms :data')
 app.use(morganApp)
-//morgan.token('data', (req, res) => req.body)
 
 
 
