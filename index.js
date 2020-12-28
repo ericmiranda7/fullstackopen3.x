@@ -1,83 +1,61 @@
-const { json } = require('express')
+require('dotenv').config()
 const cors = require('cors')
 const express = require('express')
 const app = express()
+const Phonebook = require('./models/phonebook')
 app.use(express.json())
 app.use(express.static('build'))
 app.use(cors())
 
 const morgan = require('morgan')
+const { Mongoose } = require('mongoose')
 morgan.token('data', (req, res) => {
     return JSON.stringify(req.body)
 })
 const morganApp = morgan(':method :url :status :res[content-length] - :response-time ms :data')
 app.use(morganApp)
 
-
-
-let notes = [
-    {
-        id: 1,
-        name: "Arto Hellas",
-        number: "040"
-    },
-    {
-        id: 2,
-        name: "Ada",
-        number: "020",
-    },
-    {
-        id: 3,
-        name: "Jaden",
-        number: "331",
-    },
-]
-
 app.get('/', (request, response) => {
     response.send('hi there');
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(notes)
+    Phonebook.find({}).then(phonebook => response.json(phonebook))
 })
 
 app.get('/api/persons/:id', (request, response) => {
     const id = request.params.id
-    const note = notes.find(note => note.id == id)
-    if (note) return response.json(note)
-    response.status(404).end()
+    Phonebook.findById(id).then(person => response.json(person))
 })
 
 app.get('/info', (request, response) => {
     const date = new Date()
-    response.send(`<p>Phonebook has info for ${notes.length} people</p> ${date}`)
+    response.send(`<p>Phonebook has info for ${phonebook.length} people</p> ${date}`)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = +request.params.id
-    notes = notes.filter(note => note.id !== id)
-    response.status(204).end()
+    Phonebook.findById(id).then(person => response.json(person))
 })
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
-    const id = Math.floor(Math.random() * 1000)
 
-    const exists = notes.find(note => note.name === body.name) ? true : false
+    /* const exists = Phonebook.find({name: body.name}) ? true : false
 
     if (!body.number || !body.name) return response.status(400).json({error: "name or number missing"})
-    if (exists) return response.status(400).json({error: "Name already exists"})
+    if (exists) return response.status(400).json({error: "Name already exists"}) */
 
-    const note = {
+    const person = new Phonebook({
         name: body.name,
         number: body.number,
-        id: id
-    }
+    })
 
-    notes = notes.concat(note)
-
-    response.json(note)
+    person.save().then(saved => {
+        response.json(saved)
+        console.log('saved')
+    })
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
