@@ -11,6 +11,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 const personSchema = new mongoose.Schema({
     name: String,
     number: Number,
+
 })
 
 personSchema.set('toJSON', {
