@@ -33,8 +33,11 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/info', (request, response) => {
+    Phonebook.count()
+    .then(res => {
+        response.send(`<p>Phonebook has info for ${res} people</p> ${date}`)
+    })
     const date = new Date()
-    response.send(`<p>Phonebook has info for ${phonebook.length} people</p> ${date}`)
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -46,23 +49,23 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
 
-    /* const exists = Phonebook.find({name: body.name}) ? true : false
-
-    if (!body.number || !body.name) return response.status(400).json({error: "name or number missing"})
-    if (exists) return response.status(400).json({error: "Name already exists"}) */
-
-    const person = new Phonebook({
-        name: body.name,
-        number: body.number,
+    Phonebook.find({name: body.name}).then(result => {
+        if (result.length) return response.status(400).json({error: "Name already exists"})
+        if (!body.number || !body.name) return response.status(400).json({error: "name or number missing"})
+        const person = new Phonebook({
+            name: body.name,
+            number: body.number,
+        })
+    
+        person.save().then(saved => {
+            response.json(saved)
+        })
     })
+    .catch(error => next(error))
 
-    person.save().then(saved => {
-        response.json(saved)
-        console.log('saved')
-    })
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
