@@ -53,16 +53,15 @@ app.post('/api/persons', (request, response, next) => {
     const body = request.body
 
     Phonebook.find({name: body.name}).then(result => {
-        if (result.length) return response.status(400).json({error: "Name already exists"})
-        if (!body.number || !body.name) return response.status(400).json({error: "name or number missing"})
         const person = new Phonebook({
             name: body.name,
             number: body.number,
         })
     
-        person.save().then(saved => {
-            response.json(saved)
-        })
+        person.save()
+        .then(saved => saved.toJSON())
+        .then(jsonSave => response.json(jsonSave))
+        .catch(error => next(error))
     })
     .catch(error => next(error))
 
@@ -92,6 +91,8 @@ const errorHandler = (error, request, response, next) => {
     console.error(error.message)
 
     if (error.name == 'CastError') response.status(400).send({error: 'malformatted id'})
+    else if (error.name == 'ValidationError') return response.status(400).json({error: error.message})
+    else if (error.name == 'MongoError') return response.status(400).json({error: error.message})
     else next(error)
 }
 app.use(errorHandler)
